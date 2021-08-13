@@ -49,6 +49,19 @@ const userProfileButtons = {
 	parse_mode: "HTML",
 };
 
+const confirmEditButtons = {
+	reply_markup: {
+		inline_keyboard: [
+			[{ text: "Изменить имя", callback_data: "editProfileName" }],
+			[{ text: "Изменить фамилию", callback_data: "editProfileLastname" }],
+			[{ text: "Изменить суд/регион", callback_data: "editProfileLastname" }],
+			[{ text: "Изменить статус Заказчика", callback_data: "editProfileLastname" }],
+			[{ text: "Изменить статус Исполнителя", callback_data: "editProfileLastname" }],
+		],
+	},
+	parse_mode: "HTML",
+};
+
 const confirmDeleteButtons = {
 	reply_markup: {
 		keyboard: [[{ text: "УДАЛИТЬ" }, { text: "ВЕРНУТЬСЯ" }]],
@@ -99,6 +112,9 @@ class SceneGenerator {
 		});
 		main.action("deleteProfile", (ctx) => {
 			ctx.scene.enter("deleteProfile");
+		});
+		main.action("editProfile", (ctx) => {
+			ctx.scene.enter("editProfile");
 		});
 		main.on("message", async (ctx) => {
 			let msg = ctx.message.text;
@@ -630,6 +646,31 @@ ${courtProfile.COURTADDRESS}
 		return findCourt;
 	}
 
+	// сцена редактирования параметров профиля
+
+	GenEditProfileScene() {
+		const editProfile = new Scene("editProfile");
+		editProfile.enter(async (ctx) => {
+			ctx.reply(
+				`
+Вы перешли к редактированию своего профиля. Выберите с помощью кнопок под сообщением что именно Вы хотите изменить.
+			`,
+				confirmDeleteButtons
+			);
+		});
+		main.action("editProfileName", (ctx) => {
+			ctx.reply("вход в сцену редактирования имени");
+			ctx.scene.enter("editName");
+		});
+		editProfile.on("message", (ctx) =>
+			ctx.reply(
+				`
+Неверный формат сообщения. Используйте кнопки.
+`
+			)
+		);
+		return editProfile;
+	}
 	// сцена удаления профиля
 
 	GenDeleteProfileScene() {
@@ -759,6 +800,65 @@ ${courtProfile.COURTADDRESS}
 		// 		`)
 		// 		);
 		return checkCourt;
+	}
+	GenEditNameScene() {
+		const editName = new Scene("editName");
+		editName.enter((ctx) => {
+			ctx.reply(messages.editName, {
+				parse_mode: "HTML",
+			});
+		});
+		editName.on("text", async (ctx) => {
+			const msg = ctx.message.text;
+			switch (msg) {
+				case "Регистрация":
+					ctx.reply("Вы уже в процессе регистрации. Читайте сообщения внимательно. Сейчас Вам нужно ввести свое имя.");
+					break;
+				case "Найти исполнителя":
+					const isUserRegistered = await userModel.findOne({ telegramId: ctx.message.from.id });
+					if (isUserRegistered) {
+						if (isUserRegistered.contractorStatus) {
+							ctx.scene.enter("findСontractor");
+						} else {
+							ctx.reply(
+								"Похоже Вы не завершили регистрацию в качестве Заказчика. Перейдите в профиль и укажите этот параметр"
+							);
+						}
+					} else {
+						ctx.reply("Вы еще не зарегистрированы. Искать Исполнителя можно только тем, кого я знаю по имени.");
+					}
+					break;
+				case "Помощь":
+				case "/help":
+					ctx.reply(messages.helpMessage);
+					break;
+				case "Главное меню":
+				case "/start":
+					ctx.scene.enter("main");
+					break;
+				default:
+					ctx.scene.state.contactData = {};
+					const firstName = ctx.message.text;
+					if (await db.isRegistered(ctx.message.from.id)) {
+						await ctx.reply("❗ Похоже такой пользователь у меня уже зарегистрирован. Посмотрите профиль.❗");
+						ctx.scene.enter("main");
+					} else {
+						try {
+							ctx.scene.state.contactData.telegramId = ctx.message.from.id;
+							ctx.scene.state.contactData.firstName = firstName;
+							db.saveUser(ctx.scene.state.contactData);
+							ctx.scene.enter("editLastname", ctx.scene.state);
+						} catch (error) {
+							console.log(error);
+							ctx.reply("Ошибка сохранения имени и ID.");
+						}
+						await ctx.scene.leave();
+					}
+					break;
+			}
+		});
+		editName.on("message", (ctx) => ctx.reply("Нет. Имя. Текстом. Все просто."));
+		return editName;
 	}
 }
 

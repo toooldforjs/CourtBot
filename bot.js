@@ -23,6 +23,7 @@ const editLastname = curScene.GenEditLastnameScene();
 const editRegion = curScene.GenEditRegionScene();
 const editContractorStatus = curScene.GenEditContractorStatus();
 const editCustomerStatus = curScene.GenEditCustomerStatus();
+const editProfile = curScene.GenEditProfileScene();
 const deleteProfile = curScene.GenDeleteProfileScene();
 const checkCourt = curScene.GenCheckCourtScene();
 
@@ -35,6 +36,7 @@ const stage = new Stage([
 	findCourt,
 	editContractorStatus,
 	editCustomerStatus,
+	editProfile,
 	deleteProfile,
 	checkCourt,
 ]);

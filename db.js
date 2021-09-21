@@ -2,8 +2,10 @@ const mongoose = require("mongoose");
 require("dotenv").config();
 const userModel = require("./models/User");
 
-mongoose.connect(process.env.DB_CONNECTION, { useUnifiedTopology: true, useNewUrlParser: true }, () =>
-	console.log("Connected to DB")
+mongoose.connect(
+	process.env.DB_CONNECTION,
+	{ useUnifiedTopology: true, useNewUrlParser: true, useCreateIndex: true },
+	() => console.log("-- Connected to DB --")
 );
 
 module.exports.saveUser = (user) => {

@@ -5,6 +5,7 @@ const courtSchema = new mongoose.Schema(
 		COURTNAME: {
 			type: String,
 			required: true,
+			index: true,
 		},
 		COURTNUMBER: {
 			type: String,
@@ -13,6 +14,7 @@ const courtSchema = new mongoose.Schema(
 		COURTADDRESS: {
 			type: String,
 			required: true,
+			index: true,
 		},
 		COURTPHONE: {
 			type: String,

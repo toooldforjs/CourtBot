@@ -11,6 +11,7 @@ mongoose.connect(
 module.exports.saveUser = (user) => {
 	let registeredUser = new userModel({
 		telegramId: user.telegramId,
+		username: user.username,
 		firstName: user.firstName,
 		lastName: user.lastName,
 		region: user.region,
@@ -18,7 +19,7 @@ module.exports.saveUser = (user) => {
 		customerRegisterDate: user.customerRegisterDate,
 		contractorStatus: user.contractorStatus,
 		contractorRegisterDate: user.contractorRegisterDate,
-		isAdmin: user.isAdmin,
+		registrationDate: user.registrationDate,
 	});
 	registeredUser.save(function (err) {
 		if (err) return console.error(err);

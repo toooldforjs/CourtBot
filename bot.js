@@ -11,7 +11,9 @@ const bot = new Telegraf(process.env.BOT_TOKEN);
 const SceneGenerator = require("./scenes");
 const curScene = new SceneGenerator();
 const mainScene = curScene.GenMainScene();
-const profileScene = curScene.GenProfileScene();
+// const profileScene = curScene.GenProfileScene();
+const PScene = require("./scenes/profile");
+const profileScene = PScene.GenProfileScene();
 const findСontractor = curScene.GenFindСontractorScene();
 const findCourt = curScene.GenFindCourtScene();
 const editName = curScene.GenEditNameScene();
@@ -46,7 +48,7 @@ bot.use(stage.middleware());
 // Main commands
 
 bot.start(async (ctx) => {
-	ctx.reply(messages.greeter);
+	await ctx.reply(messages.greeter);
 	ctx.scene.enter("main");
 });
 bot.on("text", (ctx) => {

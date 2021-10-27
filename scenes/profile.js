@@ -4,7 +4,6 @@ const { registeredUserMenuMarkup, userProfileButtons } = require("../components/
 const { getID, datesFunction } = require("../components/scene-functions");
 const userModel = require("../models/User");
 const courtModel = require("../models/Court");
-require("dotenv").config();
 
 exports.GenProfileScene = function () {
 	const profile = new Scene("profile");

@@ -1,5 +1,5 @@
 const Telegraf = require("telegraf");
-const { Extra, Markup, Stage, session } = Telegraf;
+const { Stage, session } = Telegraf;
 
 require("dotenv").config();
 
@@ -7,39 +7,42 @@ const messages = require("./messages");
 const bot = new Telegraf(process.env.BOT_TOKEN);
 
 // Scenes
+const main = require("./scenes/main");
+const admin = require("./scenes/admin");
+const profile = require("./scenes/profile");
+const editProfile = require("./scenes/edit-profile");
+const deleteProfile = require("./scenes/delete-profile");
+const editName = require("./scenes/edit-name");
+const editLastName = require("./scenes/edit-last-name");
+const editRegion = require("./scenes/edit-region");
+const editContractorStatus = require("./scenes/edit-contractor-status");
+const editCustomerStatus = require("./scenes/edit-customer-status");
+const findСontractor = require("./scenes/find-contractor");
 
-const SceneGenerator = require("./scenes");
-const curScene = new SceneGenerator();
-const mainScene = curScene.GenMainScene();
-// const profileScene = curScene.GenProfileScene();
-const PScene = require("./scenes/profile");
-const profileScene = PScene.GenProfileScene();
-const findСontractor = curScene.GenFindСontractorScene();
-const findCourt = curScene.GenFindCourtScene();
-const editName = curScene.GenEditNameScene();
-const editLastname = curScene.GenEditLastnameScene();
-const editRegion = curScene.GenEditRegionScene();
-const editContractorStatus = curScene.GenEditContractorStatus();
-const editCustomerStatus = curScene.GenEditCustomerStatus();
-const editProfile = curScene.GenEditProfileScene();
-const deleteProfile = curScene.GenDeleteProfileScene();
-const checkCourt = curScene.GenCheckCourtScene();
-const adminScene = curScene.GenAdminScene();
+const mainScene = main.GenMainScene();
+const adminScene = admin.GenAdminScene();
+const profileScene = profile.GenProfileScene();
+const editProfileScene = editProfile.GenEditProfileScene();
+const deleteProfileScene = deleteProfile.GenDeleteProfileScene();
+const editNameScene = editName.GenEditNameScene();
+const editLastNameScene = editLastName.GenEditLastnameScene();
+const editRegionScene = editRegion.GenEditRegionScene();
+const editContractorStatusScene = editContractorStatus.GenEditContractorStatus();
+const editCustomerStatusScene = editCustomerStatus.GenEditCustomerStatus();
+const findСontractorScene = findСontractor.GenFindСontractorScene();
 
 const stage = new Stage([
 	mainScene,
-	profileScene,
-	editName,
-	editLastname,
-	editRegion,
-	findСontractor,
-	findCourt,
-	editContractorStatus,
-	editCustomerStatus,
-	editProfile,
-	deleteProfile,
-	checkCourt,
 	adminScene,
+	profileScene,
+	editProfileScene,
+	deleteProfileScene,
+	editNameScene,
+	editLastNameScene,
+	editRegionScene,
+	editContractorStatusScene,
+	editCustomerStatusScene,
+	findСontractorScene,
 ]);
 
 bot.use(session());

@@ -5,7 +5,7 @@ const userModel = require("./models/User");
 mongoose.connect(
 	process.env.DB_CONNECTION,
 	{ useUnifiedTopology: true, useNewUrlParser: true, useCreateIndex: true },
-	() => console.log("-- Connected to DB --")
+	() => console.log("-- Connected to DB (mongoose) --")
 );
 
 module.exports.saveUser = (user) => {

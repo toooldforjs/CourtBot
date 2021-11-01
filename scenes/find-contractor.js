@@ -10,6 +10,7 @@ const courtModel = require("../models/Court");
 exports.GenFindСontractorScene = function () {
 	const findСontractor = new Scene("findСontractor");
 	findСontractor.enter(async (ctx) => {
+		ctx.scene.state.sceneName = "findСontractor";
 		let mainID = getID(ctx.message, ctx.callbackQuery);
 		ctx.reply(
 			"Это поиск Исполнителя для ознакомления с судебным делом. Введите регион или город суда, в котором нужно провести ознакомление, и я предложу суды, в который готовы сходить местные Исполнители. А после я предложу уже Исполнителей.",
@@ -47,9 +48,6 @@ exports.GenFindСontractorScene = function () {
 			case "Помощь":
 			case "/help":
 				ctx.reply(messages.helpMessage);
-				break;
-			case "Главное меню":
-				ctx.reply("Вы уже в главном меню. Выберите действие с помощью кнопок внизу.");
 				break;
 			case "Мой профиль":
 				ctx.scene.enter("profile");

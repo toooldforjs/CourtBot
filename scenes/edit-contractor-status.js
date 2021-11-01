@@ -2,19 +2,20 @@ const Scene = require("telegraf/scenes/base");
 const messages = require("../messages");
 const { userStatusButtons } = require("../components/keyboards");
 const userModel = require("../models/User");
+const replyMessages = require("../message-handlers/edit-contractor-status");
 
 // сцена регистрации в качестве Исполнителя в системе
 
 exports.GenEditContractorStatus = function () {
 	const editContractorStatus = new Scene("editContractorStatus");
 	editContractorStatus.enter(async (ctx) => {
-		ctx.reply(
-			`
-<b>Укажите, планируете ли Вы выступить в качестве Исполнителя?</b>
-Исполнитель принимает заказы на ознакомление с делами в судах своего региона. Можно одновременно быть зарегистрированным и как Заказчик, и как Исполнитель.
-`,
-			userStatusButtons
-		);
+		ctx.scene.state.sceneName = "editContractorStatus";
+		let replyMsg = replyMessages.editUserContractorStatus(ctx.scene.state);
+		if (ctx.scene.state.action == "register") {
+			ctx.reply(replyMsg.sceneEnterMessage, userStatusButtons);
+		} else {
+			ctx.reply(replyMsg.sceneEnterMessage, userStatusButtons);
+		}
 	});
 	editContractorStatus.on("text", async (ctx) => {
 		const msg = ctx.message.text;
@@ -31,9 +32,7 @@ exports.GenEditContractorStatus = function () {
 		};
 		switch (msg) {
 			case "Регистрация":
-				ctx.reply(
-					"Читайте сообщения внимательно. Сейчас Вам нужно указать, хотите ли Вы зарегистрироваться как Исполнитель."
-				);
+				ctx.reply(replyMsg.registerationUserMessage);
 				break;
 			case "Мой профиль":
 				ctx.scene.enter("profile");

@@ -2,15 +2,15 @@ const Scene = require("telegraf/scenes/base");
 const messages = require("../messages");
 const { newUserMenuMarkup, registeredUserMenuMarkup } = require("../components/keyboards");
 const userModel = require("../models/User");
-const replyMessages = require("../message-handlers/edit-name");
+const replyMessages = require("../message-handlers/edit-lastname");
 
 // сцена заполнения фамилии при редактировании профиля или при первичной регистрации
 
 exports.GenEditLastnameScene = function () {
 	const editLastname = new Scene("editLastname");
 	editLastname.enter(async (ctx) => {
-		let replyMsg;
-		replyMsg = replyMessages.editUserLastname(ctx.scene.state);
+		ctx.scene.state.sceneName = "editLastname";
+		let replyMsg = replyMessages.editUserLastname(ctx.scene.state);
 		if (ctx.scene.state.action == "register") {
 			ctx.reply(replyMsg.sceneEnterMessage, newUserMenuMarkup);
 		} else {

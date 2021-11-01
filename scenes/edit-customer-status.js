@@ -2,19 +2,20 @@ const Scene = require("telegraf/scenes/base");
 const messages = require("../messages");
 const { userStatusButtons } = require("../components/keyboards");
 const userModel = require("../models/User");
+const replyMessages = require("../message-handlers/edit-customer-status");
 
 // сцена регистрации в качестве Заказчика в системе
 
 exports.GenEditCustomerStatus = function () {
 	const editCustomerStatus = new Scene("editCustomerStatus");
 	editCustomerStatus.enter(async (ctx) => {
-		ctx.reply(
-			`
-<b>Укажите, планируете ли Вы выступить в качестве Заказчика?</b>
-Заказчик получает доступ к базе Исполнителей на ознакомление с демали в судах разных регионов. Можно одновременно быть зарегистрированным и как Заказчик, и как Исполнитель.
-`,
-			userStatusButtons
-		);
+		ctx.scene.state.sceneName = "editCustomerStatus";
+		let replyMsg = replyMessages.editUserCustomerStatus(ctx.scene.state);
+		if (ctx.scene.state.action == "register") {
+			ctx.reply(replyMsg.sceneEnterMessage, userStatusButtons);
+		} else {
+			ctx.reply(replyMsg.sceneEnterMessage, userStatusButtons);
+		}
 	});
 	editCustomerStatus.on("text", async (ctx) => {
 		const isUserRegistered = await userModel.findOne({ telegramId: ctx.message.from.id });
@@ -31,9 +32,7 @@ exports.GenEditCustomerStatus = function () {
 		const msg = ctx.message.text;
 		switch (msg) {
 			case "Регистрация":
-				ctx.reply(
-					"Вы уже в процессе регистрации. Читайте сообщения внимательно. Сейчас Вам нужно указать, хотите ли Вы зарегистрироваться как Заказчик."
-				);
+				ctx.reply(replyMsg.registerationUserMessage);
 				break;
 			case "Мой профиль":
 				ctx.scene.enter("profile");

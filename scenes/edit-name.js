@@ -10,6 +10,7 @@ const replyMessages = require("../message-handlers/edit-name");
 exports.GenEditNameScene = function () {
 	const editName = new Scene("editName");
 	editName.enter(async (ctx) => {
+		ctx.scene.state.sceneName = "editName";
 		let replyMsg = replyMessages.editUserName(ctx.scene.state);
 		if (ctx.scene.state.action == "register") {
 			ctx.reply(replyMsg.sceneEnterMessage, newUserMenuMarkup);

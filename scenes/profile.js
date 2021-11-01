@@ -8,6 +8,7 @@ const courtModel = require("../models/Court");
 exports.GenProfileScene = function () {
 	const profile = new Scene("profile");
 	profile.enter(async (ctx) => {
+		ctx.scene.state.sceneName = "profile";
 		let mainID = getID(ctx.message, ctx.callbackQuery);
 		try {
 			const userProfile = await userModel.findOne({ telegramId: mainID });

@@ -4,6 +4,7 @@ const { Stage, session } = Telegraf;
 require("dotenv").config();
 
 const messages = require("./messages");
+const { switcher } = require("./components/switcher");
 const bot = new Telegraf(process.env.BOT_TOKEN);
 
 // Scenes
@@ -52,29 +53,34 @@ bot.use(stage.middleware());
 
 bot.start(async (ctx) => {
 	await ctx.reply(messages.greeter);
+	console.log("main from bot.js");
 	ctx.scene.enter("main");
 });
 bot.on("text", (ctx) => {
-	const msg = ctx.message.text;
-	switch (msg) {
-		case "Главное меню":
-		case "Регистрация":
-			ctx.scene.enter("main");
-			break;
-		case "Помощь":
-			ctx.reply(messages.helpMessage);
-			break;
-		case "Мой профиль":
-			ctx.scene.enter("profile");
-			break;
-		case "Найти исполнителя":
-			ctx.scene.enter("findСontractor");
-			break;
-		default:
-			ctx.reply("Пользуйтесь кнопками. Не пишите ничего, пока я об этом не попрошу.");
-			break;
-	}
+	switcher(ctx);
 });
+
+// bot.on("text", (ctx) => {
+// 	const msg = ctx.message.text;
+// 	switch (msg) {
+// 		case "Главное меню":
+// 		case "Регистрация":
+// 			ctx.scene.enter("main");
+// 			break;
+// 		case "Помощь":
+// 			ctx.reply(messages.helpMessage);
+// 			break;
+// 		case "Мой профиль":
+// 			ctx.scene.enter("profile");
+// 			break;
+// 		case "Найти исполнителя":
+// 			ctx.scene.enter("findСontractor");
+// 			break;
+// 		default:
+// 			ctx.reply("Пользуйтесь кнопками. Не пишите ничего, пока я об этом не попрошу.");
+// 			break;
+// 	}
+// });
 
 bot.help((ctx) => ctx.reply(messages.helpMessage));
 

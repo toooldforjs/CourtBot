@@ -4,15 +4,15 @@ const { newUserMenuMarkup, registeredUserMenuMarkup } = require("../components/k
 const { searchCourt, courtList } = require("../components/scene-functions");
 const userModel = require("../models/User");
 const courtModel = require("../models/Court");
-const replyMessages = require("../message-handlers/edit-name");
+const replyMessages = require("../message-handlers/edit-region");
 
 // сцена указания региона при редактировании профиля или при первичной регистрации
 
 exports.GenEditRegionScene = function () {
 	const editRegion = new Scene("editRegion");
 	editRegion.enter(async (ctx) => {
-		let replyMsg;
-		replyMsg = replyMessages.editUserRegion(ctx.scene.state);
+		ctx.scene.state.sceneName = "editRegion";
+		let replyMsg = replyMessages.editUserRegion(ctx.scene.state);
 		if (ctx.scene.state.action == "register") {
 			ctx.reply(replyMsg.sceneEnterMessage, newUserMenuMarkup);
 		} else {

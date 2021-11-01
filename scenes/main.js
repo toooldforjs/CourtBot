@@ -7,6 +7,7 @@ const userModel = require("../models/User");
 exports.GenMainScene = function () {
 	const main = new Scene("main");
 	main.enter(async (ctx) => {
+		ctx.scene.state.sceneName = "main";
 		let mainID = getID(ctx.message, ctx.callbackQuery);
 		ctx.reply(
 			`

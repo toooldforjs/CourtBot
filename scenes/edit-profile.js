@@ -8,6 +8,7 @@ const userModel = require("../models/User");
 exports.GenEditProfileScene = function () {
 	const editProfile = new Scene("editProfile");
 	editProfile.enter(async (ctx) => {
+		ctx.scene.state.sceneName = "editProfile";
 		ctx.scene.state.action = "edit";
 		ctx.reply(
 			`

@@ -11,6 +11,7 @@ require("dotenv").config();
 exports.GenAdminScene = function () {
 	const adminScene = new Scene("adminScene");
 	adminScene.enter(async (ctx) => {
+		ctx.scene.state.sceneName = "adminScene";
 		let mainID = getID(ctx.message, ctx.callbackQuery);
 		if (
 			(await db.isRegistered(mainID)) &&

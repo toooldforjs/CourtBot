@@ -8,7 +8,7 @@ exports.switcher = async function (ctx, handler) {
 	if (message === "Мой профиль") {
 		switch (sceneName) {
 			case "profile":
-				ctx.reply("Вы уже в своем профиле. Здесь можно изменить данные о себе или удалить профиль");
+				ctx.reply("⚠️ Вы уже в своем профиле. Здесь можно изменить данные о себе или удалить профиль");
 				break;
 			default:
 				ctx.scene.enter("profile");
@@ -18,7 +18,7 @@ exports.switcher = async function (ctx, handler) {
 	} else if (message === "Главное меню" || message === "/start") {
 		switch (sceneName) {
 			case "main":
-				ctx.reply("Вы уже в главном меню. Выберите действие с помощью кнопок внизу.");
+				ctx.reply("⚠️ Вы уже в главном меню. Выберите действие с помощью кнопок внизу.");
 				break;
 			default:
 				console.log("to main");
@@ -37,7 +37,7 @@ exports.switcher = async function (ctx, handler) {
 				break;
 			default:
 				if (await db.isRegistered(ctx.message.from.id)) {
-					ctx.reply("Похоже, что Вы уже зарегистрированы в системе.");
+					ctx.reply("⚠️ Похоже, что Вы уже зарегистрированы в системе.");
 					ctx.scene.enter("profile");
 				} else {
 					ctx.scene.state.action = "register";
@@ -55,11 +55,11 @@ exports.switcher = async function (ctx, handler) {
 				ctx.scene.enter("findСontractor");
 			} else {
 				ctx.reply(
-					"Похоже Вы не завершили регистрацию в качестве Заказчика. Перейдите в профиль и укажите этот параметр."
+					"⚠️ Похоже Вы не завершили регистрацию в качестве Заказчика. Перейдите в профиль и укажите этот параметр."
 				);
 			}
 		} else {
-			ctx.reply("Вы еще не зарегистрированы. Искать Исполнителя можно только тем, кого я знаю по имени.");
+			ctx.reply("⚠️ Вы еще не зарегистрированы. Искать Исполнителя можно только тем, кого я знаю по имени.");
 		}
 		return;
 	} else if (message === "ВЕРНУТЬСЯ") {

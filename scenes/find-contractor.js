@@ -13,7 +13,11 @@ exports.GenFindСontractorScene = function () {
 		ctx.scene.state.sceneName = "findСontractor";
 		let mainID = getID(ctx.message, ctx.callbackQuery);
 		ctx.reply(
-			"Это поиск Исполнителя для ознакомления с судебным делом. Введите регион или город суда, в котором нужно провести ознакомление, и я предложу суды, в который готовы сходить местные Исполнители. А после я предложу уже Исполнителей.",
+			`
+💡
+Это поиск Исполнителя для ознакомления с судебным делом.
+Введите регион или город суда, в котором нужно провести ознакомление, и я предложу подходящие суды.
+Когда определимся с судом я помогу найти местного Исполнителя, готового туда сходить.`,
 			await whatMarkup(mainID)
 		);
 	});
@@ -71,15 +75,15 @@ exports.GenFindСontractorScene = function () {
 								return courtList(element, ctx);
 							});
 						} else {
-							ctx.reply("Поиск не дал результатов. Переформулируйте запрос.");
+							ctx.reply("⚠️ Поиск не дал результатов. Переформулируйте запрос и попробуйте снова.");
 						}
 					} else {
-						await ctx.reply("Не зарегистрирован");
+						await ctx.reply("⚠️ Похоже Вы не зарегистрированы в системе. Загрегистрируйтесь и возвращайтесь.");
 						ctx.scene.enter("main");
 					}
 				} catch (error) {
 					console.error(error);
-					await ctx.reply("Ошибка поиска");
+					await ctx.reply(messages.defaultErrorMessage);
 					ctx.scene.reenter();
 				}
 		}
@@ -102,7 +106,7 @@ exports.GenFindСontractorScene = function () {
 			});
 		} catch (error) {
 			console.error(error);
-			ctx.reply("Ошибка сохранения информации. Попробуйте снова.");
+			ctx.reply(messages.defaultErrorMessage);
 			ctx.scene.reenter();
 		}
 	});
@@ -132,10 +136,10 @@ exports.GenFindСontractorScene = function () {
 			);
 		} catch (error) {
 			console.error(error);
-			ctx.reply("Ошибка сохранения информации. Попробуйте снова.");
+			ctx.reply(messages.defaultErrorMessage);
 			ctx.scene.reenter();
 		}
 	});
-	findСontractor.on("message", (ctx) => ctx.reply("Читайте инструкции."));
+	findСontractor.on("message", (ctx) => ctx.reply(messages.messageTypeWarningMessage));
 	return findСontractor;
 };

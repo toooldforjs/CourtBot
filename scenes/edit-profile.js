@@ -12,7 +12,8 @@ exports.GenEditProfileScene = function () {
 		ctx.scene.state.action = "edit";
 		ctx.reply(
 			`
-Вы перешли к редактированию своего профиля. Выберите с помощью кнопок под сообщением что именно Вы хотите изменить.
+💡 Редактирование профиля. 💡
+Выберите с помощью кнопок под сообщением что именно Вы хотите изменить.
         `,
 			confirmEditButtons
 		);
@@ -69,12 +70,6 @@ exports.GenEditProfileScene = function () {
 		ctx.answerCbQuery();
 		ctx.scene.enter("editCustomerStatus", ctx.scene.state);
 	});
-	editProfile.on("message", (ctx) =>
-		ctx.reply(
-			`
-Не нужно ничего сейчас писать. Используйте кнопки.
-`
-		)
-	);
+	editProfile.on("message", (ctx) => ctx.reply(messages.messageTypeWarningMessage));
 	return editProfile;
 };

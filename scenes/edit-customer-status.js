@@ -66,13 +66,11 @@ exports.GenEditCustomerStatus = function () {
 							{ $set: { customerStatus: true, customerRegisterDate: checkCustomerRegStatus() } }
 						);
 						await ctx
-							.reply(
-								"Вы зарегистрированы как Заказчик! Процесс регистрации завершен. Можете приступать к поиску Исполнителя."
-							)
+							.reply("💡 Вы зарегистрированы как Заказчик! Можете приступать к поиску Исполнителя.")
 							.then(ctx.scene.enter("main"));
 					} catch (error) {
 						console.log(error);
-						ctx.reply("Ошибка сохранения статуса Заказчика.");
+						ctx.reply(messages.defaultErrorMessage);
 						ctx.scene.enter("editCustomerStatus", ctx.scene.state);
 					}
 				} else {
@@ -81,11 +79,11 @@ exports.GenEditCustomerStatus = function () {
 							{ telegramId: ctx.message.from.id },
 							{ $set: { customerStatus: true, customerRegisterDate: checkCustomerRegStatus() } }
 						);
-						ctx.reply("Теперь Вы зарегистрированы как Заказчик. Можете приступать к поиску Исполнителя.");
+						ctx.reply("💡 Теперь Вы зарегистрированы как Заказчик. Можете приступать к поиску Исполнителя.");
 						ctx.scene.enter("profile");
 					} catch (error) {
 						console.log(error);
-						ctx.reply("Ошибка сохранения статуса Заказчика.");
+						ctx.reply(messages.defaultErrorMessage);
 						ctx.scene.enter("editCustomerStatus", ctx.scene.state);
 					}
 				}
@@ -98,11 +96,13 @@ exports.GenEditCustomerStatus = function () {
 							{ telegramId: ctx.message.from.id },
 							{ $set: { customerStatus: false, customerRegisterDate: undefined } }
 						);
-						ctx.reply("Вы отказались от регистрации как Заказчик. Процесс регистрации завершен.");
+						ctx.reply(
+							"💡 Вы отказались от регистрации как Заказчик. Теперь Вы не сможете искать Исполнителей для ознакомления с делами. Если передумаете - измените настройку в профиле."
+						);
 						ctx.scene.enter("main");
 					} catch (error) {
 						console.log(error);
-						ctx.reply("Ошибка сохранения статуса Заказчика.");
+						ctx.reply(messages.defaultErrorMessage);
 						ctx.scene.enter("editCustomerStatus", ctx.scene.state);
 					}
 				} else {
@@ -112,12 +112,12 @@ exports.GenEditCustomerStatus = function () {
 							{ $set: { customerStatus: false, customerRegisterDate: undefined } }
 						);
 						ctx.reply(
-							"Вы отказались от статуса Заказчика. Теперь Вы не сможете искать Исполнителей для ознакомления с делами. Если передумаете - измените настройку в профиле."
+							"💡 Вы отказались от статуса Заказчика. Теперь Вы не сможете искать Исполнителей для ознакомления с делами. Если передумаете - измените настройку в профиле."
 						);
 						ctx.scene.enter("profile");
 					} catch (error) {
 						console.log(error);
-						ctx.reply("Ошибка сохранения статуса Заказчика.");
+						ctx.reply(messages.defaultErrorMessage);
 						ctx.scene.enter("editCustomerStatus", ctx.scene.state);
 					}
 				}
@@ -128,12 +128,6 @@ exports.GenEditCustomerStatus = function () {
 				break;
 		}
 	});
-	editCustomerStatus.on("message", (ctx) =>
-		ctx.reply(
-			`
-Просто нажмите на одну из кнопок внизу. ДА или НЕТ.
-    `
-		)
-	);
+	editCustomerStatus.on("message", (ctx) => ctx.reply(messages.messageTypeWarningMessage));
 	return editCustomerStatus;
 };

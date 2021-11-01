@@ -53,7 +53,6 @@ bot.use(stage.middleware());
 
 bot.start(async (ctx) => {
 	await ctx.reply(messages.greeter);
-	console.log("main from bot.js");
 	ctx.scene.enter("main");
 });
 bot.on("text", (ctx) => {

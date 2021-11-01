@@ -66,11 +66,11 @@ exports.GenEditContractorStatus = function () {
 							{ $set: { contractorStatus: true, contractorRegisterDate: checkContractorRegStatus() } }
 						);
 						await ctx
-							.reply("Вам присвоен статус Исполнителя! Ждите сообщений о заказах.")
+							.reply("💡 Вам присвоен статус Исполнителя! Ждите сообщений о заказах.")
 							.then(ctx.scene.enter("editCustomerStatus", ctx.scene.state));
 					} catch (error) {
 						console.log(error);
-						ctx.reply("Ошибка сохранения статуса Исполнителя.");
+						ctx.reply(messages.defaultErrorMessage);
 						ctx.scene.enter("editContractorStatus", ctx.scene.state);
 					}
 				} else {
@@ -80,11 +80,11 @@ exports.GenEditContractorStatus = function () {
 							{ $set: { contractorStatus: true, contractorRegisterDate: checkContractorRegStatus() } }
 						);
 						ctx
-							.reply("Cтатус Исполнителя изменен. Теперь ожидайте сообщений о заказах.")
+							.reply("💡 Cтатус Исполнителя изменен. Теперь ожидайте сообщений о заказах.")
 							.then(ctx.scene.enter("profile"));
 					} catch (error) {
 						console.log(error);
-						ctx.reply("Ошибка сохранения статуса Исполнителя.");
+						ctx.reply(messages.defaultErrorMessage);
 						ctx.scene.enter("editContractorStatus", ctx.scene.state);
 					}
 				}
@@ -98,11 +98,13 @@ exports.GenEditContractorStatus = function () {
 							{ $set: { contractorStatus: false, contractorRegisterDate: undefined } }
 						);
 						ctx
-							.reply("Вы отказались регистрироваться в качестве Исполнителя. Возможно Вы здесь чтобы заказать услугу?")
+							.reply(
+								"💡 Вы отказались от статуса Исполнителя и не сможете получать сообщения о заказах. Если передумаете - измените статус в профиле."
+							)
 							.then(ctx.scene.enter("editCustomerStatus", ctx.scene.state));
 					} catch (error) {
 						console.log(error);
-						ctx.reply("Ошибка сохранения статуса Исполнителя.");
+						ctx.reply(messages.defaultErrorMessage);
 						ctx.scene.enter("editContractorStatus", ctx.scene.state);
 					}
 				} else {
@@ -111,11 +113,13 @@ exports.GenEditContractorStatus = function () {
 							{ telegramId: ctx.message.from.id },
 							{ $set: { contractorStatus: false, contractorRegisterDate: undefined } }
 						);
-						ctx.reply("Вы отказались от статуса Исполнителя. Если передумаете - измените статус в профиле.");
+						ctx.reply(
+							"💡 Вы отказались от статуса Исполнителя и не сможете получать сообщения о заказах. Если передумаете - измените статус в профиле."
+						);
 						ctx.scene.enter("profile");
 					} catch (error) {
 						console.log(error);
-						ctx.reply("Ошибка сохранения статуса Исполнителя.");
+						ctx.reply(messages.defaultErrorMessage);
 						ctx.scene.enter("editContractorStatus", ctx.scene.state);
 					}
 				}
@@ -126,12 +130,6 @@ exports.GenEditContractorStatus = function () {
 				break;
 		}
 	});
-	editContractorStatus.on("message", (ctx) =>
-		ctx.reply(
-			`
-Просто нажмите на одну из кнопок внизу. ДА или НЕТ.
-    `
-		)
-	);
+	editContractorStatus.on("message", (ctx) => ctx.reply(messages.messageTypeWarningMessage));
 	return editContractorStatus;
 };

@@ -52,7 +52,7 @@ exports.GenEditLastnameScene = function () {
 						await userModel.updateOne({ telegramId: ctx.message.from.id }, { $set: { lastName: msg } });
 						ctx.scene.enter("editRegion", ctx.scene.state);
 					} catch (error) {
-						ctx.reply("Ошибка сохранения фамилии. Попробуйте сначала.");
+						ctx.reply(messages.defaultErrorMessage);
 						ctx.scene.reenter();
 					}
 				} else {
@@ -60,19 +60,19 @@ exports.GenEditLastnameScene = function () {
 						await userModel.updateOne({ telegramId: ctx.message.from.id }, { $set: { lastName: msg } });
 						ctx.scene.enter("main");
 					} catch (error) {
-						ctx.reply("Ошибка обновления фамилии. Попробуйте сначала.");
+						ctx.reply(messages.defaultErrorMessage);
 						ctx.scene.reenter();
 					}
-					ctx.reply(`Фамилия обновлена. Новая фамилия: ${msg}`);
+					ctx.reply(
+						`
+💡 Фамилия обновлена. 💡
+Новая фамилия: ${msg}
+`
+					);
 				}
 				break;
 		}
 	});
-	editLastname.on("message", (ctx) =>
-		ctx.reply(`
-Если это Ваша фамилия, то я бы советовал ее сменить.
-А если серьезно, давайте фамилию. Буквами.
-    `)
-	);
+	editLastname.on("message", (ctx) => ctx.reply(messages.messageTypeWarningMessage));
 	return editLastname;
 };

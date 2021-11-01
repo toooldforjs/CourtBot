@@ -1,5 +1,5 @@
 const Scene = require("telegraf/scenes/base");
-// const messages = require("../messages");
+const messages = require("../messages");
 const { confirmDeleteButtons } = require("../components/keyboards");
 const userModel = require("../models/User");
 const { switcher } = require("../components/switcher");
@@ -10,15 +10,17 @@ const { dashLogger } = require("../logger");
 let deleteProfileHandler = async function (ctx) {
 	try {
 		await userModel.deleteOne({ telegramId: ctx.message.from.id });
-		ctx.reply("Ваш аккаунт удален. Возвращайтесь, если понадоблюсь.");
+		ctx.reply(
+			`
+💡 Ваш аккаунт удален. 💡
+Возвращайтесь, если понадоблюсь.
+`
+		);
 		ctx.scene.enter("main");
 	} catch (error) {
 		dashLogger.error(`Error : ${error}, Scene: ${ctx.scene.state.sceneName}`);
 		console.log(error);
-		ctx.reply(`
-🔴 Ошибка удаления аккаунта. 🔴
-Попробуйте позже, или обратитесь в поддержку /help
-`);
+		ctx.reply(messages.defaultErrorMessage);
 		ctx.scene.enter("main");
 	}
 };
@@ -91,12 +93,6 @@ exports.GenDeleteProfileScene = function () {
 		// 				break;
 		// 		}
 	});
-	deleteProfile.on("message", (ctx) =>
-		ctx.reply(
-			`
-Вы в процессе удаления аккаунта. Внизу экрана есть 2 кнопки. Сделайте выбор.
-`
-		)
-	);
+	deleteProfile.on("message", (ctx) => ctx.reply(messages.messageTypeWarningMessage));
 	return deleteProfile;
 };

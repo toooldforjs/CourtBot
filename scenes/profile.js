@@ -107,10 +107,6 @@ exports.GenProfileScene = function () {
 				break;
 		}
 	});
-	profile.on("message", (ctx) =>
-		ctx.reply(
-			"Не нужно ничего отправлять. В профиле можно изменить параметры или удалить сведения о себе полностью. Хотите выйти из профиля - воспользуйтесь кнопками внизу."
-		)
-	);
+	profile.on("message", (ctx) => ctx.reply(messages.messageTypeWarningMessage));
 	return profile;
 };

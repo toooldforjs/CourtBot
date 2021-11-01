@@ -50,7 +50,7 @@ exports.GenEditNameScene = function () {
 			default:
 				if (ctx.scene.state.action == "register") {
 					if (await db.isRegistered(ctx.message.from.id)) {
-						await ctx.reply("❗ Похоже такой пользователь уже зарегистрирован. Посмотрите профиль.❗");
+						await ctx.reply("⚠️ Похоже такой пользователь уже зарегистрирован. Посмотрите профиль.");
 						ctx.scene.state.action = "edit";
 						ctx.scene.enter("main", ctx.scene.state);
 					} else {
@@ -64,17 +64,22 @@ exports.GenEditNameScene = function () {
 							db.saveUser(userParams);
 							ctx.scene.enter("editLastname", ctx.scene.state);
 						} catch (error) {
-							ctx.reply("Ошибка сохранения имени и ID. Попробуйте сначала.");
+							ctx.reply(messages.defaultErrorMessage);
 							ctx.scene.reenter();
 						}
 					}
 				} else {
 					try {
 						await userModel.updateOne({ telegramId: ctx.message.from.id }, { $set: { firstName: msg } });
-						ctx.reply(`Имя обновлено. Новое имя: ${msg}`);
+						ctx.reply(
+							`
+💡 Имя обновлено. 💡
+Новое имя: ${msg}
+`
+						);
 						ctx.scene.enter("main");
 					} catch (error) {
-						ctx.reply("Ошибка обновления имени. Попробуйте сначала.");
+						ctx.reply(messages.defaultErrorMessage);
 						ctx.scene.reenter();
 					}
 				}
@@ -82,6 +87,6 @@ exports.GenEditNameScene = function () {
 				break;
 		}
 	});
-	editName.on("message", (ctx) => ctx.reply("Нет. Имя. Текстом. Все просто."));
+	editName.on("message", (ctx) => ctx.reply(messages.messageTypeWarningMessage));
 	return editName;
 };

@@ -7,6 +7,7 @@ const messages = require("./messages");
 const { switcher } = require("./components/switcher");
 const bot = new Telegraf(process.env.BOT_TOKEN);
 const PORT = process.env.PORT || 5000;
+const { BOT_TOKEN, URL } = process.env;
 
 // Scenes
 const main = require("./scenes/main");

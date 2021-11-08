@@ -1,19 +1,23 @@
 {
-  "name": "testbot",
+  "name": "CourtBot",
   "version": "1.0.0",
   "description": "Bot allows you to find a contractor for visiting court in any region of the country.",
   "main": "bot.js",
   "dependencies": {
     "dotenv": "^8.6.0",
     "moment": "^2.29.1",
-    "mongoose": "^5.13.8",
+    "mongoose": "^5.13.12",
     "nodemon": "^2.0.14",
     "telegraf": "^3.39.0",
     "winston": "^3.3.3",
     "winston-daily-rotate-file": "^4.5.5"
   },
   "devDependencies": {},
+  "engines": {
+    "node": "14.x"
+  },
   "scripts": {
+    "start": "node bot.js",
     "dev": "nodemon bot.js"
   },
   "author": "Anton Kondrashov",

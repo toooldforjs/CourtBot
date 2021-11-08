@@ -58,6 +58,7 @@ exports.GenEditNameScene = function () {
 							telegramId: ctx.message.from.id,
 							username: ctx.message.from.username,
 							firstName: msg,
+							profilePic: "AgACAgIAAxkBAAIkAWGC3DIuYo198SxA0zOMrIC3OWVnAAK5tjEbUnsRSPNg_-ApzTgGAQADAgADcwADIQQ",
 							registrationDate: Date.now(),
 						};
 						try {

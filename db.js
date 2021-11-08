@@ -15,6 +15,8 @@ module.exports.saveUser = (user) => {
 		firstName: user.firstName,
 		lastName: user.lastName,
 		region: user.region,
+		profilePic: user.profilePic,
+		profileBio: user.profileBio,
 		customerStatus: user.customerStatus,
 		customerRegisterDate: user.customerRegisterDate,
 		contractorStatus: user.contractorStatus,

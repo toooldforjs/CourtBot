@@ -62,6 +62,14 @@ exports.GenEditProfileScene = function () {
 		ctx.answerCbQuery();
 		ctx.scene.enter("editRegion", ctx.scene.state);
 	});
+	editProfile.action("editProfilePic", (ctx) => {
+		ctx.answerCbQuery();
+		ctx.scene.enter("editProfilePhoto");
+	});
+	editProfile.action("editProfileBio", (ctx) => {
+		ctx.answerCbQuery();
+		ctx.scene.enter("editProfileBio");
+	});
 	editProfile.action("editProfileContractor", (ctx) => {
 		ctx.answerCbQuery();
 		ctx.scene.enter("editContractorStatus", ctx.scene.state);

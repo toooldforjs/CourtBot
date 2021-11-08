@@ -58,9 +58,9 @@ exports.GenMainScene = function () {
 			case "/start":
 				ctx.scene.reenter();
 				break;
-			case "/admin":
-				ctx.scene.enter("adminScene");
-				break;
+			// case "/admin":
+			// 	ctx.scene.enter("adminScene");
+			// 	break;
 
 			default:
 				ctx.reply(messages.messageTypeWarningMessage);

@@ -3,11 +3,11 @@ const messages = require("../messages");
 const { confirmDeleteButtons } = require("../components/keyboards");
 const userModel = require("../models/User");
 const { switcher } = require("../components/switcher");
-const { dashLogger } = require("../logger");
+// const { dashLogger } = require("../logger");
 
 // сцена удаления профиля
 
-let deleteProfileHandler = async function (ctx) {
+const deleteProfileHandler = async function (ctx) {
 	try {
 		await userModel.deleteOne({ telegramId: ctx.message.from.id });
 		ctx.reply(
@@ -18,8 +18,7 @@ let deleteProfileHandler = async function (ctx) {
 		);
 		ctx.scene.enter("main");
 	} catch (error) {
-		dashLogger.error(`Error : ${error}, Scene: ${ctx.scene.state.sceneName}`);
-		console.log(error);
+		// dashLogger.error(`Error : ${error}, Scene: ${ctx.scene.state.sceneName}`);
 		ctx.reply(messages.defaultErrorMessage);
 		ctx.scene.enter("main");
 	}

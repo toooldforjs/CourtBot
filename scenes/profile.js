@@ -1,9 +1,10 @@
 const Scene = require("telegraf/scenes/base");
-const messages = require("../messages");
-const { registeredUserMenuMarkup, userProfileButtons } = require("../components/keyboards");
+const { userProfileButtons } = require("../components/keyboards");
 const { getID, datesFunction } = require("../components/scene-functions");
+const { switcher } = require("../components/switcher");
 const userModel = require("../models/User");
 const courtModel = require("../models/Court");
+require("dotenv").config();
 
 exports.GenProfileScene = function () {
 	const profile = new Scene("profile");
@@ -15,42 +16,37 @@ exports.GenProfileScene = function () {
 			if (userProfile) {
 				let courtProfile = await courtModel.findOne({ COURTNUMBER: userProfile.region });
 				let dates = datesFunction(userProfile);
-				await ctx.reply(
-					`
-⭐ Мой профиль ⭐
+				if (userProfile.profilePic) {
+					await ctx.telegram.sendPhoto(ctx.message.chat.id, `${userProfile.profilePic}`, {
+						caption: `
+Имя: 🔸 ${userProfile.firstName == undefined ? "Неизвестно" : userProfile.firstName}
+Фамилия: 🔸 ${userProfile.lastName == undefined ? "Неизвестна" : userProfile.lastName}
+Номер суда: 🔸 ${userProfile.region == undefined ? "Неизвестен" : userProfile.region}
+Название суда: 🔸 ${courtProfile == null || undefined ? "Неизвестно" : courtProfile.COURTNAME}
+Описание: 🔸
+${userProfile.profileBio == null || undefined ? "Не указано" : userProfile.profileBio}
 
-                `,
-					registeredUserMenuMarkup
-				);
-				await ctx.reply(
-					`
-<b>Имя:</b> ${userProfile.firstName == undefined ? "Неизвестно" : userProfile.firstName}
-<b>Фамилия:</b> ${userProfile.lastName == undefined ? "Неизвестна" : userProfile.lastName}
-<b>Номер суда:</b> ${userProfile.region == undefined ? "Неизвестен" : userProfile.region}
-<b>Название суда:</b> ${courtProfile == null || undefined ? "Неизвестно" : courtProfile.COURTNAME}
+Исполнитель? ${
+							userProfile.contractorStatus == undefined
+								? "❌ НЕТ"
+								: userProfile.contractorStatus == false
+								? "❌ НЕТ"
+								: "✅ ДА"
+						}${dates.contractorRD == undefined ? "" : `\nИсполнитель с ${dates.contractorRD}`}
 
-<b>Зарегистрирован как исполнитель:</b> ${
-						userProfile.contractorStatus == undefined
-							? "❌ НЕТ"
-							: userProfile.contractorStatus == false
-							? "❌ НЕТ"
-							: "✅ ДА"
-					}${
-						dates.contractorRD == undefined
-							? ""
-							: `\n\n<b>Дата регистрации как исполнителя:</b> ⏰ ${dates.contractorRD}`
-					}
-
-<b>Зарегистрирован как заказчик:</b> ${
-						userProfile.customerStatus == undefined
-							? "❌ НЕТ"
-							: userProfile.customerStatus == false
-							? "❌ НЕТ"
-							: "✅ ДА"
-					}${dates.customerRD == undefined ? "" : `\n\n<b>Дата регистрации как заказчика:</b> ⏰ ${dates.customerRD}`}
+Заказчик? ${
+							userProfile.customerStatus == undefined
+								? "❌ НЕТ"
+								: userProfile.customerStatus == false
+								? "❌ НЕТ"
+								: "✅ ДА"
+						}${dates.customerRD == undefined ? "" : `\nЗаказчик с ${dates.customerRD}`}
 `,
-					userProfileButtons
-				);
+						reply_markup: userProfileButtons,
+					});
+				} else {
+					await ctx.reply("⭐ ⭐ ⭐ Мой профиль ⭐ ⭐ ⭐");
+				}
 			} else {
 				ctx.reply(
 					"Похоже мы еще не знакомы. Личный кабинет и профиль станут доступны после того, Вы как зарегистрируетесь."
@@ -72,41 +68,19 @@ exports.GenProfileScene = function () {
 		ctx.scene.enter("editProfile");
 	});
 	profile.on("text", async (ctx) => {
-		const msg = ctx.message.text;
-		switch (msg) {
-			case "Регистрация":
-				ctx.reply("Вы уже зарегистрированы.");
-				break;
-			case "Найти исполнителя":
-				const isUserRegistered = await userModel.findOne({ telegramId: ctx.message.from.id });
-				if (isUserRegistered) {
-					if (isUserRegistered.customerStatus) {
-						ctx.scene.enter("findСontractor");
-					} else {
-						ctx.reply(
-							"Похоже Вы не завершили регистрацию в качестве Заказчика. Перейдите в профиль и укажите этот параметр."
-						);
-					}
-				} else {
-					ctx.reply("Вы еще не зарегистрированы. Искать Исполнителя можно только тем, кого я знаю по имени.");
-				}
-				break;
-			case "Помощь":
-			case "/help":
-				ctx.reply(messages.helpMessage);
-				break;
-			case "Главное меню":
-			case "/start":
-				ctx.scene.enter("main");
-				break;
-			case "Мой профиль":
-				ctx.scene.reenter();
-				break;
-			default:
-				ctx.reply("Пользуйтесь кнопками. Не пишите ничего, пока я об этом не попрошу.");
-				break;
+		switcher(ctx);
+	});
+	profile.on("message", async (ctx) => {
+		try {
+			let a = await ctx.telegram.getUserProfilePhotos(127429898);
+			let b = a.photos[0][0].file_id;
+			let c = await ctx.telegram.getFile(`${b}`);
+			console.log(c);
+			console.log(ctx.message.chat.id);
+			ctx.telegram.sendPhoto(ctx.message.chat.id, `${c.file_id}`);
+		} catch (error) {
+			console.error(error);
 		}
 	});
-	profile.on("message", (ctx) => ctx.reply(messages.messageTypeWarningMessage));
 	return profile;
 };

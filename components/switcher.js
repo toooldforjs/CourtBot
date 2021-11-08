@@ -1,11 +1,15 @@
 const userModel = require("../models/User");
 const messages = require("../messages");
+const { registeredUserMenuMarkup } = require("../components/keyboards");
 const db = require("../db");
 
 exports.switcher = async function (ctx, handler) {
 	const message = ctx.message.text;
 	const sceneName = ctx.scene.state.sceneName;
-	if (message === "Мой профиль") {
+	if (message === "/admin") {
+		ctx.scene.enter("adminScene");
+		return;
+	} else if (message === "Мой профиль") {
 		switch (sceneName) {
 			case "profile":
 				ctx.reply("⚠️ Вы уже в своем профиле. Здесь можно изменить данные о себе или удалить профиль");
@@ -21,7 +25,6 @@ exports.switcher = async function (ctx, handler) {
 				ctx.reply("⚠️ Вы уже в главном меню. Выберите действие с помощью кнопок внизу.");
 				break;
 			default:
-				console.log("to main");
 				ctx.scene.enter("main");
 				break;
 		}
@@ -65,7 +68,7 @@ exports.switcher = async function (ctx, handler) {
 	} else if (message === "ВЕРНУТЬСЯ") {
 		switch (sceneName) {
 			case "deleteProfile":
-				ctx.reply("Правильный выбор! С возвращением!");
+				ctx.reply("Правильный выбор! С возвращением!", registeredUserMenuMarkup);
 				ctx.scene.enter("profile");
 				break;
 			default:
@@ -78,6 +81,12 @@ exports.switcher = async function (ctx, handler) {
 				break;
 			default:
 				break;
+		}
+	} else {
+		if (handler === undefined) {
+			return;
+		} else {
+			handler(ctx);
 		}
 	}
 };

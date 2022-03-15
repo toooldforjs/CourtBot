@@ -1,7 +1,7 @@
 const Scene = require("telegraf/scenes/base");
 const messages = require("../messages");
 const { whatMarkup, getID } = require("../components/scene-functions");
-const db = require("../db");
+const { isRegistered } = require("../components/scene-functions");
 const userModel = require("../models/User");
 
 exports.GenMainScene = function () {
@@ -23,7 +23,7 @@ exports.GenMainScene = function () {
 		let msg = ctx.message.text;
 		switch (msg) {
 			case "Регистрация":
-				if (await db.isRegistered(ctx.message.from.id)) {
+				if (await isRegistered(ctx.message.from.id)) {
 					ctx.reply(messages.alreadyRegistered);
 					ctx.scene.reenter();
 				} else {
@@ -58,9 +58,9 @@ exports.GenMainScene = function () {
 			case "/start":
 				ctx.scene.reenter();
 				break;
-			// case "/admin":
-			// 	ctx.scene.enter("adminScene");
-			// 	break;
+			case "/admin":
+				ctx.scene.enter("adminScene");
+				break;
 
 			default:
 				ctx.reply(messages.messageTypeWarningMessage);

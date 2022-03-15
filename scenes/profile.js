@@ -4,7 +4,7 @@ const { getID, datesFunction } = require("../components/scene-functions");
 const { switcher } = require("../components/switcher");
 const userModel = require("../models/User");
 const courtModel = require("../models/Court");
-require("dotenv").config();
+const logger = require("../logger");
 
 exports.GenProfileScene = function () {
 	const profile = new Scene("profile");
@@ -17,14 +17,16 @@ exports.GenProfileScene = function () {
 				let courtProfile = await courtModel.findOne({ COURTNUMBER: userProfile.region });
 				let dates = datesFunction(userProfile);
 				if (userProfile.profilePic) {
-					await ctx.telegram.sendPhoto(ctx.message.chat.id, `${userProfile.profilePic}`, {
+					await ctx.telegram.sendPhoto(mainID, `${userProfile.profilePic}`, {
 						caption: `
 Имя: 🔸 ${userProfile.firstName == undefined ? "Неизвестно" : userProfile.firstName}
 Фамилия: 🔸 ${userProfile.lastName == undefined ? "Неизвестна" : userProfile.lastName}
 Номер суда: 🔸 ${userProfile.region == undefined ? "Неизвестен" : userProfile.region}
 Название суда: 🔸 ${courtProfile == null || undefined ? "Неизвестно" : courtProfile.COURTNAME}
-Описание: 🔸
-${userProfile.profileBio == null || undefined ? "Не указано" : userProfile.profileBio}
+Описание: 🔸 ${userProfile.profileBio}
+
+Мой рейтинг: 🔸 ${userProfile.rating.totalRating}
+Как повысить рейтинг? /help
 
 Исполнитель? ${
 							userProfile.contractorStatus == undefined
@@ -45,7 +47,35 @@ ${userProfile.profileBio == null || undefined ? "Не указано" : userProf
 						reply_markup: userProfileButtons,
 					});
 				} else {
-					await ctx.reply("⭐ ⭐ ⭐ Мой профиль ⭐ ⭐ ⭐");
+					await ctx.reply(
+						`
+Имя: 🔸 ${userProfile.firstName == undefined ? "Неизвестно" : userProfile.firstName}
+Фамилия: 🔸 ${userProfile.lastName == undefined ? "Неизвестна" : userProfile.lastName}
+Номер суда: 🔸 ${userProfile.region == undefined ? "Неизвестен" : userProfile.region}
+Название суда: 🔸 ${courtProfile == null || undefined ? "Неизвестно" : courtProfile.COURTNAME}
+Описание: 🔸 ${userProfile.profileBio}
+
+Мой рейтинг: 🔸 ${userProfile.rating.totalRating}
+Как повысить рейтинг? /help
+
+Исполнитель? ${
+							userProfile.contractorStatus == undefined
+								? "❌ НЕТ"
+								: userProfile.contractorStatus == false
+								? "❌ НЕТ"
+								: "✅ ДА"
+						}${dates.contractorRD == undefined ? "" : `\nИсполнитель с ${dates.contractorRD}`}
+
+Заказчик? ${
+							userProfile.customerStatus == undefined
+								? "❌ НЕТ"
+								: userProfile.customerStatus == false
+								? "❌ НЕТ"
+								: "✅ ДА"
+						}${dates.customerRD == undefined ? "" : `\nЗаказчик с ${dates.customerRD}`}
+					`,
+						{ reply_markup: userProfileButtons }
+					);
 				}
 			} else {
 				ctx.reply(
@@ -54,7 +84,7 @@ ${userProfile.profileBio == null || undefined ? "Не указано" : userProf
 				ctx.scene.enter("main");
 			}
 		} catch (error) {
-			console.log(error);
+			logger.error(error, { tgMessage: ctx.message, tgQuery: ctx.callbackQuery });
 			await ctx.reply("Ошибка поиска профиля в базе");
 			ctx.scene.enter("main");
 		}
@@ -71,16 +101,7 @@ ${userProfile.profileBio == null || undefined ? "Не указано" : userProf
 		switcher(ctx);
 	});
 	profile.on("message", async (ctx) => {
-		try {
-			let a = await ctx.telegram.getUserProfilePhotos(127429898);
-			let b = a.photos[0][0].file_id;
-			let c = await ctx.telegram.getFile(`${b}`);
-			console.log(c);
-			console.log(ctx.message.chat.id);
-			ctx.telegram.sendPhoto(ctx.message.chat.id, `${c.file_id}`);
-		} catch (error) {
-			console.error(error);
-		}
+		ctx.reply("⚠️ Не нужно ничего отправлять, пока я об этом не попрошу.");
 	});
 	return profile;
 };

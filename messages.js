@@ -36,5 +36,5 @@ module.exports.defaultErrorMessage = `
 `;
 module.exports.messageTypeWarningMessage = `
 ⚠️ Внимание! ⚠️
-Читайте инструкции на экране. Пользуйтесь кнопками внизу.
+Читайте инструкции на экране. Пользуйтесь кнопками.
 `;

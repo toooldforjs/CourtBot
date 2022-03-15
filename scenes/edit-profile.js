@@ -1,7 +1,7 @@
 const Scene = require("telegraf/scenes/base");
 const messages = require("../messages");
 const { confirmEditButtons } = require("../components/keyboards");
-const userModel = require("../models/User");
+const { switcher } = require("../components/switcher");
 
 // сцена редактирования параметров профиля
 
@@ -19,36 +19,7 @@ exports.GenEditProfileScene = function () {
 		);
 	});
 	editProfile.on("text", async (ctx) => {
-		switch (ctx.message.text) {
-			case "Найти исполнителя":
-				const isUserRegistered = await userModel.findOne({ telegramId: ctx.message.from.id });
-				if (isUserRegistered) {
-					if (isUserRegistered.contractorStatus) {
-						ctx.scene.enter("findСontractor");
-					} else {
-						ctx.reply(
-							"Похоже Вы не завершили регистрацию в качестве Заказчика. Перейдите в профиль и укажите этот параметр"
-						);
-					}
-				} else {
-					ctx.reply("Вы еще не зарегистрированы. Искать Исполнителя можно только тем, кого я знаю по имени.");
-				}
-				break;
-			case "Помощь":
-			case "/help":
-				ctx.reply(messages.helpMessage);
-				break;
-			case "Главное меню":
-			case "/start":
-				ctx.scene.enter("main");
-				break;
-			case "Мой профиль":
-				ctx.scene.enter("profile");
-				break;
-			default:
-				ctx.reply("Не нужно ничего писать. Пользуйтесь кнопками.");
-				break;
-		}
+		switcher(ctx);
 	});
 	editProfile.action("editProfileName", (ctx) => {
 		ctx.answerCbQuery();

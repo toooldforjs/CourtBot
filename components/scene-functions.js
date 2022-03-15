@@ -1,28 +1,45 @@
 const moment = require("moment");
 moment.locale("ru");
 const { newUserMenuMarkup, registeredUserMenuMarkup } = require("../components/keyboards");
-const db = require("../db");
+const messages = require("../messages");
 const userModel = require("../models/User");
 const courtModel = require("../models/Court");
 require("dotenv").config();
+const logger = require("../logger");
+
+// функция проверяет зарегистрирован ли пользователь
+
+exports.isRegistered = async (telegramId) => {
+	const result = await userModel.find({ telegramId: telegramId }).limit(1).countDocuments();
+	return result > 0 ? true : false;
+};
 
 // функция фильтрует запрос пользователя удаляя лишние слова из массива запроса
-
 exports.correctQuery = function (query) {
 	const badWords = [
 		"АС",
-		"область",
+		"и",
+		"в",
+		"АО",
+		"ПСП",
+		"автономного",
+		"автономный",
+		"округа",
+		"округ",
+		"-",
+		"города",
+		"город",
 		"области",
-		"пер.",
-		"просп.",
-		"проспект",
-		"г.",
-		"д.",
-		"ул.",
-		"корп.",
-		"стр.",
-		"край",
+		"область",
 		"края",
+		"край",
+		"г.",
+		"пл.",
+		"пр.",
+		"ул.",
+		"бульвар",
+		"пер.",
+		"корп.",
 	];
 	let arr = query
 		.split(" ")
@@ -36,7 +53,7 @@ exports.correctQuery = function (query) {
 
 // функция возвращает разные клавиатуры для зарегистрированного и нового пользователя
 exports.whatMarkup = async function (tgID) {
-	if (await db.isRegistered(tgID)) {
+	if (await userModel.find({ telegramId: tgID }).limit(1).countDocuments()) {
 		return registeredUserMenuMarkup;
 	} else {
 		return newUserMenuMarkup;
@@ -63,14 +80,15 @@ exports.searchCourt = async function (tgID, request) {
 			if (dbResults) {
 				return dbResults;
 			} else {
-				console.log("Court not found!");
+				ctx.reply("Такой суд в базе не найден.");
 			}
 		} else {
-			console.log("User not registered!");
+			ctx.reply("Искать суды в базе могут только зарегистрированные пользователи.");
 		}
 	} catch (error) {
-		console.log("Ошибка обращения к базе");
-		console.log(error);
+		logger.error(error, { tgMessage: ctx.message, tgQuery: ctx.callbackQuery });
+		ctx.reply(messages.defaultErrorMessage);
+		ctx.scene.reenter();
 	}
 };
 
@@ -112,18 +130,70 @@ exports.courtList = function (item, ctx) {
 };
 // генерация кнопок выбора Исполнителя из найденных в базе совпадений по региону
 
-exports.userList = function (item, ctx) {
+exports.userList = async function (item, ctx) {
 	const chooseUserButtons = {
-		reply_markup: {
-			inline_keyboard: [[{ text: `Написать ☝️ ${item.firstName}`, callback_data: `user_${item._id}` }]],
-		},
-		parse_mode: "HTML",
+		inline_keyboard: [
+			[
+				{
+					text: `Написать ☝️ ${typeof item.firstName === "string" ? item.firstName : "этому исполнителю"}`,
+					callback_data: `user_${item._id}`,
+				},
+			],
+		],
 	};
-	ctx.reply(
-		`
-📌 <b>${item.firstName} ${item.lastName}</b>
-Является Исполнителем с: <b>${moment(item.contractorRegisterDate).format("DD.MM.YYYY")}</b>
-`,
-		chooseUserButtons
-	);
+	if (item.profilePic) {
+		await ctx.telegram.sendPhoto(ctx.update.callback_query.message.chat.id, `${item.profilePic}`, {
+			caption: `
+🔶 ${typeof item.firstName === "string" ? item.firstName : ""} ${typeof item.lastName === "string" ? item.lastName : ""}
+
+🔸 Об исполнителе: ${item.profileBio ? item.profileBio : "Нет описания"}
+🔸 Является Исполнителем с ${moment(item.contractorRegisterDate).format("DD.MM.YYYY")}
+🔸 Рейтинг: ${item.rating.totalRating}
+		`,
+			reply_markup: chooseUserButtons,
+		});
+	} else {
+		ctx.reply(
+			`
+🔶 ${typeof item.firstName === "string" ? item.firstName : ""} ${typeof item.lastName === "string" ? item.lastName : ""}
+
+🔸 Об исполнителе: ${item.profileBio ? item.profileBio : "Нет описания"}
+🔸 Является Исполнителем с ${moment(item.contractorRegisterDate).format("DD.MM.YYYY")}
+🔸 Рейтинг: ${item.rating.totalRating}
+	`,
+			{ reply_markup: chooseUserButtons }
+		);
+	}
+};
+
+// функция проверки нужно ли перезаписать дату регистрации пользователя как исполнителя
+
+exports.contractorRegDate = async function (ctx) {
+	const user = await userModel.findOne({ telegramId: ctx.message.from.id });
+	let updateDate = undefined;
+	if (user.contractorStatus == true) {
+		// если статус исполнителя в базе == ДА
+		updateDate = user.contractorRegisterDate;
+		// оставляем старую дату
+	} else {
+		updateDate = Date.now();
+		// записываем текущую дату
+	}
+	return updateDate;
+};
+
+// функция проверки нужно ли перезаписать дату регистрации пользователя как заказчика
+
+exports.customerRegDate = async function (ctx) {
+	const user = await userModel.findOne({ telegramId: ctx.message.from.id });
+	let updateDate = undefined;
+	if (user.customerStatus == true) {
+		// если статус исполнителя в базе == ДА
+		updateDate = user.customerRegisterDate;
+		// оставляем старую дату
+	} else {
+		updateDate = Date.now();
+		// записываем текущую дату
+	}
+	return updateDate;
 };

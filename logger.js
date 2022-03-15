@@ -1,22 +1,20 @@
-// const winston = require("winston");
-// require("winston-daily-rotate-file");
+const winston = require("winston");
+require("winston-daily-rotate-file");
+const { createLogger, format } = require("winston");
 
-// const dashLog = new winston.transports.DailyRotateFile({
-// 	filename: "./logs/dash-%DATE%.log",
-// 	datePattern: "YYYY-MM-DD",
-// 	zippedArchive: false,
-// 	maxSize: "10m",
-// });
+const transportToFile = new winston.transports.DailyRotateFile({
+	dirname: "logs",
+	filename: "errors-%DATE%.log",
+	datePattern: "YYYY-MM-DD",
+	zippedArchive: false,
+	maxSize: "5m",
+	maxFiles: "7d",
+});
 
-// const dash = winston.createLogger({
-// 	transports: [
-// 		dashLog,
-// 		new winston.transports.Console({
-// 			colorize: true,
-// 		}),
-// 	],
-// });
+const logger = createLogger({
+	level: "error",
+	format: format.combine(format.timestamp(), format.errors({ stack: true }), format.json()),
+	transports: [transportToFile],
+});
 
-// module.exports = {
-// 	dashLogger: dash,
-// };
+module.exports = logger;

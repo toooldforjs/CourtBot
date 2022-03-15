@@ -1,8 +1,8 @@
 const Scene = require("telegraf/scenes/base");
 const messages = require("../messages");
 const { newUserMenuMarkup, registeredUserMenuMarkup } = require("../components/keyboards");
-const db = require("../db");
-const userModel = require("../models/User");
+const { editNameHandler } = require("../components/edit-name-handler");
+const { switcher } = require("../components/switcher");
 const replyMessages = require("../message-handlers/edit-name");
 
 // сцена заполнения имени при редактировании профиля или при первичной регистрации
@@ -12,81 +12,24 @@ exports.GenEditNameScene = function () {
 	editName.enter(async (ctx) => {
 		ctx.scene.state.sceneName = "editName";
 		let replyMsg = replyMessages.editUserName(ctx.scene.state);
-		if (ctx.scene.state.action == "register") {
-			ctx.reply(replyMsg.sceneEnterMessage, newUserMenuMarkup);
+		if (!ctx.callbackQuery.from.username) {
+			ctx.reply(`
+⚠️ 🔴 Внимание! 🔴 ⚠️
+У Вас не заполнено имя пользователя в профиле Телеграм!
+Без него не получится связаться с Вами.
+Чтобы зарегистрироваться в системе сначала заполните свое имя пользователя.
+`);
+			ctx.scene.enter("main");
 		} else {
-			ctx.reply(replyMsg.sceneEnterMessage, registeredUserMenuMarkup);
+			if (ctx.scene.state.action == "register") {
+				ctx.reply(replyMsg.sceneEnterMessage, newUserMenuMarkup);
+			} else {
+				ctx.reply(replyMsg.sceneEnterMessage, registeredUserMenuMarkup);
+			}
 		}
 	});
 	editName.on("text", async (ctx) => {
-		const msg = ctx.message.text;
-		switch (msg) {
-			case "Регистрация":
-				ctx.reply(replyMsg.registerationUserMessage);
-				break;
-			case "Мой профиль":
-				ctx.scene.enter("profile");
-				break;
-			case "Найти исполнителя":
-				const isUserRegistered = await userModel.findOne({ telegramId: ctx.message.from.id });
-				if (isUserRegistered) {
-					if (isUserRegistered.contractorStatus) {
-						ctx.scene.enter("findСontractor");
-					} else {
-						ctx.reply(replyMsg.notRegisteredContractorMessage);
-					}
-				} else {
-					ctx.reply(replyMsg.notRegisteredUserMessage);
-				}
-				break;
-			case "Помощь":
-			case "/help":
-				ctx.reply(messages.helpMessage);
-				break;
-			case "Главное меню":
-			case "/start":
-				ctx.scene.enter("main");
-				break;
-			default:
-				if (ctx.scene.state.action == "register") {
-					if (await db.isRegistered(ctx.message.from.id)) {
-						await ctx.reply("⚠️ Похоже такой пользователь уже зарегистрирован. Посмотрите профиль.");
-						ctx.scene.state.action = "edit";
-						ctx.scene.enter("main", ctx.scene.state);
-					} else {
-						let userParams = {
-							telegramId: ctx.message.from.id,
-							username: ctx.message.from.username,
-							firstName: msg,
-							profilePic: "AgACAgIAAxkBAAIkAWGC3DIuYo198SxA0zOMrIC3OWVnAAK5tjEbUnsRSPNg_-ApzTgGAQADAgADcwADIQQ",
-							registrationDate: Date.now(),
-						};
-						try {
-							db.saveUser(userParams);
-							ctx.scene.enter("editLastname", ctx.scene.state);
-						} catch (error) {
-							ctx.reply(messages.defaultErrorMessage);
-							ctx.scene.reenter();
-						}
-					}
-				} else {
-					try {
-						await userModel.updateOne({ telegramId: ctx.message.from.id }, { $set: { firstName: msg } });
-						ctx.reply(
-							`
-💡 Имя обновлено. 💡
-Новое имя: ${msg}
-`
-						);
-						ctx.scene.enter("main");
-					} catch (error) {
-						ctx.reply(messages.defaultErrorMessage);
-						ctx.scene.reenter();
-					}
-				}
-
-				break;
-		}
+		switcher(ctx, editNameHandler);
 	});
 	editName.on("message", (ctx) => ctx.reply(messages.messageTypeWarningMessage));
 	return editName;

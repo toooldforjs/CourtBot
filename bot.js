@@ -1,7 +1,9 @@
 const Telegraf = require("telegraf");
 const { Stage, session } = Telegraf;
-
+const mongoose = require("mongoose");
 require("dotenv").config();
+const winston = require("winston");
+const logger = require("./logger");
 
 const messages = require("./messages");
 const { switcher } = require("./components/switcher");
@@ -70,13 +72,28 @@ bot.on("text", (ctx) => {
 if (process.env.NODE_ENV === "production") {
 	bot.telegram.setWebhook(`${URL}/bot${BOT_TOKEN}`);
 	bot.startWebhook(`/bot${BOT_TOKEN}`, null, PORT);
-	console.log("Started with webhook");
+	mongoose.connect(process.env.DB_CONNECTION, {
+		useUnifiedTopology: true,
+		useNewUrlParser: true,
+		useCreateIndex: true,
+	});
 } else {
 	bot
 		.launch()
 		.then((res) => console.log("-- Started local --"))
+		.then((res) =>
+			mongoose.connect(
+				process.env.DB_CONNECTION,
+				{ useUnifiedTopology: true, useNewUrlParser: true, useCreateIndex: true },
+				() => console.log("-- Connected to DB (mongoose) --")
+			)
+		)
+		.then((res) =>
+			logger.add(
+				new winston.transports.Console({
+					format: winston.format.combine(winston.format.prettyPrint()),
+				})
+			)
+		)
 		.catch((error) => console.log(error));
 }
-
-// process.once("SIGINT", () => bot.stop("SIGINT"));
-// process.once("SIGTERM", () => bot.stop("SIGTERM"));

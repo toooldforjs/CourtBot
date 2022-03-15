@@ -13,7 +13,6 @@ exports.registeredUserMenuMarkup = {
 		keyboard: [
 			[{ text: "Найти исполнителя" }, { text: "Мой профиль" }],
 			[{ text: "Помощь" }, { text: "Главное меню" }],
-			[{ text: "тест" }, { text: "Москва" }],
 		],
 		resize_keyboard: true,
 	},
@@ -53,7 +52,10 @@ exports.confirmEditButtons = {
 
 exports.adminButtons = {
 	reply_markup: {
-		inline_keyboard: [[{ text: "Stats", callback_data: "callStats" }]],
+		inline_keyboard: [
+			[{ text: "Статистика", callback_data: "callStats" }],
+			[{ text: "Лог ошибок", callback_data: "errorsLog" }],
+		],
 	},
 };
 

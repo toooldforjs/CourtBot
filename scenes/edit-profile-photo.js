@@ -1,6 +1,6 @@
 const Scene = require("telegraf/scenes/base");
-const userModel = require("../models/User");
 const { switcher } = require("../components/switcher");
+const { editPhotoHandler } = require("../components/edit-photo-handler");
 
 // сцена фото при редактировании профиля
 
@@ -23,21 +23,13 @@ exports.GenEditProfilePhotoScene = function () {
 		switcher(ctx);
 	});
 	editProfilePhoto.on("message", async (ctx) => {
-		try {
-			if (ctx.message.photo) {
-				await userModel.updateOne(
-					{ telegramId: ctx.message.from.id },
-					{ $set: { profilePic: ctx.message.photo[0].file_id } }
-				);
-				await ctx.reply("💡 Изображение сохранено");
-			} else {
-				await ctx.reply(`
-🔴 Произошла ошибка. 🔴
-Нужно отправить именно фото/картинку. Не файл, не стикер. Попробуйте снова или обратитесь в поддержку /help.]
-                `);
-			}
-		} catch (error) {
-			console.error(error);
+		if (ctx.message.photo) {
+			editPhotoHandler(ctx);
+		} else {
+			await ctx.reply(`
+	🔴 Произошла ошибка. 🔴
+	Нужно отправить именно фото/картинку. Не файл, не стикер. Попробуйте снова или обратитесь в поддержку /help.]
+			`);
 		}
 	});
 	return editProfilePhoto;

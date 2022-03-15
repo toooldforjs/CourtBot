@@ -1,7 +1,7 @@
 const userModel = require("../models/User");
 const messages = require("../messages");
 const { registeredUserMenuMarkup } = require("../components/keyboards");
-const db = require("../db");
+const { isRegistered } = require("./scene-functions");
 
 exports.switcher = async function (ctx, handler) {
 	const message = ctx.message.text;
@@ -39,7 +39,7 @@ exports.switcher = async function (ctx, handler) {
 				ctx.reply(replyMsg.registerationUserMessage);
 				break;
 			default:
-				if (await db.isRegistered(ctx.message.from.id)) {
+				if (await isRegistered(ctx.message.from.id)) {
 					ctx.reply("⚠️ Похоже, что Вы уже зарегистрированы в системе.");
 					ctx.scene.enter("profile");
 				} else {
@@ -50,7 +50,8 @@ exports.switcher = async function (ctx, handler) {
 		}
 		return;
 	} else if (message === "Помощь" || message === "/help") {
-		return ctx.reply(messages.helpMessage);
+		await ctx.reply(messages.helpMessage);
+		ctx.scene.enter("editLastname", ctx.scene.state);
 	} else if (message === "Найти исполнителя") {
 		const isUserRegistered = await userModel.findOne({ telegramId: ctx.message.from.id });
 		if (isUserRegistered) {

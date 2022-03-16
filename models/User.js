@@ -9,7 +9,7 @@ const userSchema = new mongoose.Schema(
 		region: String,
 		profilePic: {
 			type: String,
-			default: "AgACAgIAAxkBAAIkAWGC3DIuYo198SxA0zOMrIC3OWVnAAK5tjEbUnsRSPNg_-ApzTgGAQADAgADcwADIQQ",
+			default: "AgACAgIAAxkBAAI7d2IyUe2FU4twOJmQWDgU6SYaz-afAAKKuTEbl5iZSZoZ5JgVWt9rAQADAgADcwADIwQ",
 		},
 		profileBio: { type: String, default: "Не указано" },
 		customerStatus: { type: Boolean, default: false },

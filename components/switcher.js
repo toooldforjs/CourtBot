@@ -51,7 +51,6 @@ exports.switcher = async function (ctx, handler) {
 		return;
 	} else if (message === "Помощь" || message === "/help") {
 		await ctx.reply(messages.helpMessage);
-		ctx.scene.enter("editLastname", ctx.scene.state);
 	} else if (message === "Найти исполнителя") {
 		const isUserRegistered = await userModel.findOne({ telegramId: ctx.message.from.id });
 		if (isUserRegistered) {

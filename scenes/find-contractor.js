@@ -63,35 +63,45 @@ exports.GenFindСontractorScene = function () {
 				},
 				{ $sort: { "rating.totalRating": -1 } },
 			]);
-			await ctx.reply(`
+			if (dbRequestResults.length > 0) {
+				await ctx.reply(`
 🔎 В этом регионе есть ${foundedCounter[0].telegramId} исполнителей. 🔍
 Вот они, отсортированные по рейтингу.
 `);
-			const moreContractorsButton = () => {
-				if (dbRequestResults.length > 3) {
-					return {
-						reply_markup: {
-							inline_keyboard: [[{ text: "⬇️ Еще ⬇️", callback_data: "more_contractors" }]],
-						},
-						parse_mode: "HTML",
-					};
-				}
-			};
-			async function orderedMessages(array) {
-				const newArray = array.slice(0, 3);
-				for (const element of newArray) {
-					await userList(element, ctx);
-				}
-				ctx.reply(
-					`
+				const moreContractorsButton = () => {
+					if (dbRequestResults.length > 3) {
+						return {
+							reply_markup: {
+								inline_keyboard: [[{ text: "⬇️ Еще ⬇️", callback_data: "more_contractors" }]],
+							},
+							parse_mode: "HTML",
+						};
+					}
+				};
+				async function orderedMessages(array) {
+					const newArray = array.slice(0, 3);
+					for (const element of newArray) {
+						await userList(element, ctx);
+					}
+					ctx.reply(
+						`
 Показано ${foundedCounter[0].telegramId < 3 ? foundedCounter[0].telegramId : 3} из ${
-						foundedCounter[0].telegramId
-					} исполнителей, найденных в этом регионе.
+							foundedCounter[0].telegramId
+						} исполнителей, найденных в этом регионе.
 `,
-					moreContractorsButton()
-				);
+						moreContractorsButton()
+					);
+				}
+				orderedMessages(dbRequestResults);
+			} else {
+				ctx.reply(`
+⚠️ Исполнителей в этом регионе не найдено ⚠️
+
+Попробуйте вернуться позже.
+
+Пожалуйста, распространите информацию об этом боте среди своих коллег @oznakomim_bot.
+`);
 			}
-			orderedMessages(dbRequestResults);
 		} catch (error) {
 			logger.error(error, { tgMessage: ctx.message, tgQuery: ctx.callbackQuery });
 			ctx.reply(messages.defaultErrorMessage);

@@ -47,7 +47,10 @@ exports.GenMainScene = function () {
 				break;
 			case "Помощь":
 			case "/help":
-				ctx.reply(messages.helpMessage);
+				ctx.reply(messages.helpMessage, {
+					parse_mode: "HTML",
+					disable_web_page_preview: true,
+				});
 				break;
 			case "Главное меню":
 				ctx.reply("Вы уже в главном меню. Выберите действие с помощью кнопок внизу.");

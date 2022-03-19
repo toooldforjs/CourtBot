@@ -18,6 +18,8 @@ exports.isRegistered = async (telegramId) => {
 exports.correctQuery = function (query) {
 	const badWords = [
 		"АС",
+		"арбитражный",
+		"суд",
 		"и",
 		"в",
 		"АО",

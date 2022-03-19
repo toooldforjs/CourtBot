@@ -51,7 +51,10 @@ exports.GenAdminScene = function () {
 				break;
 			case "Помощь":
 			case "/help":
-				ctx.reply(messages.helpMessage);
+				ctx.reply(messages.helpMessage, {
+					parse_mode: "HTML",
+					disable_web_page_preview: true,
+				});
 				break;
 			case "Главное меню":
 			case "/start":

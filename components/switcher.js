@@ -50,7 +50,10 @@ exports.switcher = async function (ctx, handler) {
 		}
 		return;
 	} else if (message === "Помощь" || message === "/help") {
-		await ctx.reply(messages.helpMessage);
+		await ctx.reply(messages.helpMessage, {
+			parse_mode: "HTML",
+			disable_web_page_preview: true,
+		});
 	} else if (message === "Найти исполнителя") {
 		const isUserRegistered = await userModel.findOne({ telegramId: ctx.message.from.id });
 		if (isUserRegistered) {

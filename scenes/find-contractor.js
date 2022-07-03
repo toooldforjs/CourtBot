@@ -127,7 +127,11 @@ exports.GenFindСontractorScene = function () {
 Заказчик: 👔 <b>${typeof currentCustomer.firstName === "string" ? currentCustomer.firstName : ""} ${
 					typeof currentCustomer.lastName === "string" ? currentCustomer.lastName : ""
 				}</b>.
-Написать заказчику: 💬 <a href="tg://user?id=${currentCustomer.telegramId}">@${currentCustomer.firstName}</a>
+${
+	currentCustomer.username === undefined
+		? `Ожидайте от Заказчика сообщения с подробностями.`
+		: `Написать заказчику: 💬 @${currentCustomer.username}`
+}
 `,
 				{ parse_mode: "HTML" }
 			);
@@ -138,10 +142,9 @@ exports.GenFindСontractorScene = function () {
 					typeof chosenUser.lastName === "string" ? chosenUser.lastName : ""
 				}</b> отправлено.
 ${
-	typeof chosenUser.username === "undefined"
-		? ""
-		: `Если понадобится - можете написать ему/ей лично: <a href="tg://user?id=${chosenUser.telegramId}">@${chosenUser.firstName}</a>
-`
+	currentCustomer.username === undefined
+		? `Для обсуждения деталей Вам лучше выйти на связь первым по этому контакту: <a href="tg://user?id=${chosenUser.telegramId}">@${chosenUser.firstName}</a>`
+		: `Если понадобится - можете написать ему/ей лично: <a href="tg://user?id=${chosenUser.telegramId}">@${chosenUser.firstName}</a>`
 }
 `,
 				{ parse_mode: "HTML" }

@@ -12,20 +12,10 @@ exports.GenEditNameScene = function () {
 	editName.enter(async (ctx) => {
 		ctx.scene.state.sceneName = "editName";
 		let replyMsg = replyMessages.editUserName(ctx.scene.state);
-		if (!ctx.callbackQuery.from.username) {
-			ctx.reply(`
-⚠️ 🔴 Внимание! 🔴 ⚠️
-У Вас не заполнено имя пользователя в профиле Телеграм!
-Без него не получится связаться с Вами.
-Чтобы зарегистрироваться в системе сначала заполните свое имя пользователя.
-`);
-			ctx.scene.enter("main");
+		if (ctx.scene.state.action == "register") {
+			ctx.reply(replyMsg.sceneEnterMessage, newUserMenuMarkup);
 		} else {
-			if (ctx.scene.state.action == "register") {
-				ctx.reply(replyMsg.sceneEnterMessage, newUserMenuMarkup);
-			} else {
-				ctx.reply(replyMsg.sceneEnterMessage, registeredUserMenuMarkup);
-			}
+			ctx.reply(replyMsg.sceneEnterMessage, registeredUserMenuMarkup);
 		}
 	});
 	editName.on("text", async (ctx) => {

@@ -142,9 +142,9 @@ ${
 					typeof chosenUser.lastName === "string" ? chosenUser.lastName : ""
 				}</b> отправлено.
 ${
-	currentCustomer.username === undefined
+	chosenUser.username === undefined
 		? `Для обсуждения деталей Вам лучше выйти на связь первым по этому контакту: <a href="tg://user?id=${chosenUser.telegramId}">@${chosenUser.firstName}</a>`
-		: `Если понадобится - можете написать ему/ей лично: <a href="tg://user?id=${chosenUser.telegramId}">@${chosenUser.firstName}</a>`
+		: `Если понадобится - можете написать ему/ей лично: @${chosenUser.username}`
 }
 `,
 				{ parse_mode: "HTML" }

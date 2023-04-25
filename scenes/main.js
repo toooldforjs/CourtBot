@@ -34,7 +34,7 @@ exports.GenMainScene = function () {
 			case "Найти исполнителя":
 				const isUserRegistered = await userModel.findOne({ telegramId: ctx.message.from.id });
 				if (isUserRegistered) {
-					if (isUserRegistered.contractorStatus) {
+					if (isUserRegistered.customerStatus) {
 						ctx.scene.enter("findСontractor");
 					} else {
 						ctx.reply(
